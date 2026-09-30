@@ -1,0 +1,744 @@
+<!doctype html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <title>JMComic Web</title>
+    <style>
+        :root {
+            font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+            color: #172033;
+            background: #f5f7fb
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh
+        }
+
+        .shell {
+            max-width: 1080px;
+            margin: auto;
+            padding: 30px 24px 56px
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 34px
+        }
+
+        .brand {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            font-weight: 750
+        }
+
+        .mark {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: grid;
+            place-items: center;
+            background: #16233b;
+            color: #fff;
+            font-size: 20px
+        }
+
+        .eyebrow {
+            color: #73809a;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .08em
+        }
+
+        h1 {
+            font-size: clamp(28px, 4vw, 46px);
+            line-height: 1.1;
+            margin: 0 0 12px
+        }
+
+        .lead {
+            color: #66728a;
+            max-width: 610px;
+            line-height: 1.65;
+            margin: 0
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1.4fr) minmax(280px, .8fr);
+            gap: 20px;
+            align-items: start
+        }
+
+        .panel {
+            background: #fff;
+            border: 1px solid #e4e9f1;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px #1c2a420f
+        }
+
+        .panel-head {
+            padding: 20px 22px 14px;
+            border-bottom: 1px solid #edf0f5;
+            display: flex;
+            justify-content: space-between;
+            align-items: center
+        }
+
+        .panel-head h2 {
+            margin: 0;
+            font-size: 16px
+        }
+
+        .panel-body {
+            padding: 22px
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            color: #536079;
+            margin-bottom: 8px
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 120px;
+            resize: vertical;
+            border: 1px solid #d5dce8;
+            border-radius: 6px;
+            padding: 14px;
+            color: #172033;
+            background: #fbfcfe;
+            font: inherit;
+            line-height: 1.5;
+            outline: 0
+        }
+
+        textarea:focus {
+            border-color: #4774d1;
+            box-shadow: 0 0 0 3px #e5edff
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 14px
+        }
+
+        button {
+            border: 0;
+            border-radius: 6px;
+            padding: 11px 16px;
+            font-weight: 700;
+            cursor: pointer;
+            font: inherit;
+            transition: transform 160ms ease-out
+        }
+
+        button:active {
+            transform: scale(.97)
+        }
+
+        button.primary {
+            background: #285dcc;
+            color: #fff
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            button.primary:hover {
+                background: #204eae
+            }
+        }
+
+        button.secondary {
+            background: #edf2fb;
+            color: #31569c
+        }
+
+        button.logout {
+            padding: 8px 10px;
+            background: transparent;
+            color: #647089
+        }
+
+        button:disabled {
+            opacity: .5;
+            cursor: default
+        }
+
+        .hint {
+            color: #8994a8;
+            font-size: 12px;
+            margin-top: 10px
+        }
+
+        .items {
+            margin-top: 16px
+        }
+
+        .item {
+            padding: 14px 0;
+            border-bottom: 1px solid #edf0f5
+        }
+
+        .item:last-child {
+            border-bottom: 0
+        }
+
+        .item-title {
+            font-weight: 750;
+            margin-bottom: 6px
+        }
+
+        .meta {
+            color: #77839a;
+            font-size: 13px;
+            line-height: 1.6
+        }
+
+        .status-panel {
+            position: sticky;
+            top: 20px
+        }
+
+        .status-line {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 14px
+        }
+
+        .dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: #c4cad5
+        }
+
+        .dot.active {
+            background: #3b72d9;
+            box-shadow: 0 0 0 4px #e6eeff
+        }
+
+        .dot.done {
+            background: #27a36a
+        }
+
+        .dot.error {
+            background: #d04a4a
+        }
+
+        .status-text {
+            font-weight: 700
+        }
+
+        .progress-wrap {
+            margin: 18px 0
+        }
+
+        progress {
+            width: 100%;
+            height: 9px;
+            accent-color: #356bd2
+        }
+
+        .numbers {
+            display: flex;
+            justify-content: space-between;
+            color: #77839a;
+            font-size: 13px
+        }
+
+        .download-link {
+            display: inline-block;
+            margin-top: 16px;
+            color: #285dcc;
+            font-weight: 750;
+            text-decoration: none
+        }
+
+        .empty {
+            color: #9aa4b5;
+            font-size: 13px;
+            padding: 18px 0
+        }
+
+        .footer {
+            color: #929caf;
+            font-size: 12px;
+            margin-top: 24px
+        }
+
+        .mode-switch {
+            display: flex;
+            gap: 4px;
+            padding: 4px;
+            background: #e9eef7;
+            border-radius: 8px;
+            margin-bottom: 28px
+        }
+
+        .mode-switch button {
+            flex: 1;
+            padding: 10px 14px;
+            background: transparent;
+            color: #647089
+        }
+
+        .mode-switch button.active {
+            background: #fff;
+            color: #1d3768;
+            box-shadow: 0 2px 8px #1c2a4214
+        }
+
+        .view[hidden] {
+            display: none
+        }
+
+        .search-toolbar {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto auto;
+            gap: 10px;
+            margin-bottom: 16px
+        }
+
+        input, select {
+            width: 100%;
+            border: 1px solid #d5dce8;
+            border-radius: 6px;
+            padding: 11px 12px;
+            color: #172033;
+            background: #fbfcfe;
+            font: inherit;
+            outline: 0
+        }
+
+        input:focus, select:focus {
+            border-color: #4774d1;
+            box-shadow: 0 0 0 3px #e5edff
+        }
+
+        .search-filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 18px
+        }
+
+        .search-filters select {
+            max-width: 180px
+        }
+
+        .search-results {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+            gap: 14px
+        }
+
+        .search-card {
+            display: flex;
+            min-width: 0;
+            flex-direction: column;
+            align-items: stretch;
+            border: 1px solid #e4e9f1;
+            border-radius: 6px;
+            overflow: hidden;
+            background: #fff
+        }
+
+        .cover {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 3 / 4;
+            height: auto;
+            padding: 0;
+            flex: none;
+            display: grid;
+            place-items: center;
+            color: #6d7c99;
+            background: #eef2f8;
+            font-size: 28px;
+            font-weight: 800
+        }
+
+        .cover img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover
+        }
+
+        .search-card-body {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex: 1;
+            flex-direction: column;
+            padding: 14px
+        }
+
+        .search-card .item-title {
+            display: -webkit-box;
+            overflow: hidden;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+        }
+
+        .tag-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin: 9px 0 13px
+        }
+
+        .tag {
+            padding: 3px 7px;
+            border-radius: 4px;
+            color: #58709c;
+            background: #edf2fb;
+            font-size: 11px
+        }
+
+        .card-action {
+            width: 100%;
+            margin-top: auto;
+            padding: 9px 10px
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            margin-top: 22px
+        }
+
+        @media(max-width:760px) {
+            .shell {
+                padding: 20px 14px 40px
+            }
+
+            .topbar {
+                margin-bottom: 24px
+            }
+
+            .layout {
+                grid-template-columns: 1fr
+            }
+
+            .status-panel {
+                position: static
+            }
+
+            .actions button {
+                flex: 1
+            }
+
+            .search-toolbar {
+                grid-template-columns: 1fr 1fr
+            }
+
+            .search-toolbar input {
+                grid-column: 1 / -1
+            }
+
+            .search-filters select {
+                max-width: none;
+                flex: 1;
+            }
+        }
+
+        @media(prefers-reduced-motion:reduce) {
+            button {
+                transition: none
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="shell">
+        <header class="topbar">
+            <div class="brand">
+                <div class="mark">J</div><span>JMComic Download</span>
+            </div>
+            <button id="logout" class="logout" type="button">退出登录</button>
+        </header>
+        <nav class="mode-switch" aria-label="功能切换">
+            <button id="downloadMode" class="active" type="button">下载漫画</button>
+            <button id="searchMode" type="button">搜索漫画</button>
+        </nav>
+        <section id="downloadView" class="view">
+            <div class="eyebrow" style="margin-bottom:10px">漫画下载与归档</div>
+            <h1>把你想看的漫画下载到本地吧</h1>
+            <p class="lead">输入车牌号，先点击预览信息，再开始下载。任务在后台执行，完成后即可下载压缩包</p>
+            <div class="layout" style="margin-top:28px">
+            <section class="panel">
+                <div class="panel-head">
+                    <h2>创建下载任务</h2><span class="eyebrow">01 / INPUT</span>
+                </div>
+                <div class="panel-body">
+                    <label for="ids">JM 车号</label>
+                    <textarea id="ids" placeholder="例如：350234 114514"></textarea>
+                    <div id="idsHint" class="hint">多个车号用空格或换行分隔。</div>
+                    <div class="actions">
+                        <button id="preview" class="primary">预览信息</button>
+                        <button id="start" class="secondary" disabled>开始下载</button>
+                    </div>
+                    <div id="previewList" class="items">
+                        <div class="empty">预览结果会显示在这里。</div>
+                    </div>
+                </div>
+            </section>
+            <aside class="panel status-panel">
+                <div class="panel-head">
+                    <h2>任务状态</h2><span class="eyebrow">02 / STATUS</span>
+                </div>
+                <div class="panel-body">
+                    <div class="status-line"><span id="dot" class="dot"></span><span id="statusText"
+                            class="status-text">尚未创建任务</span></div>
+                    <div id="statusMessage" class="meta">预览漫画后开始下载。</div>
+                    <div class="progress-wrap"><progress id="progress" value="0" max="1" hidden></progress>
+                        <div class="numbers"><span id="completed">0 页</span><span id="total">-</span></div>
+                    </div><a id="download" class="download-link" hidden>下载 ZIP 文件</a>
+                </div>
+            </aside>
+            </div>
+        </section>
+        <section id="searchView" class="view" hidden>
+            <div class="eyebrow" style="margin-bottom:10px">JMComic 搜索</div>
+            <h1>查找你想下载的漫画</h1>
+            <p class="lead">通过 JMComic 搜索接口查找作品、作者、标签或角色，找到后可直接加入下载。</p>
+            <section class="panel" style="margin-top:28px">
+                <div class="panel-head"><h2>搜索结果</h2><span id="searchCount" class="eyebrow">输入关键词开始</span></div>
+                <div class="panel-body">
+                    <form id="searchForm" class="search-toolbar">
+                        <input id="searchQuery" type="search" maxlength="100" placeholder="搜索作品名、作者或标签" autocomplete="off">
+                        <select id="searchType" aria-label="搜索范围"><option value="site">全站</option><option value="work">作品</option><option value="author">作者</option><option value="tag">标签</option><option value="actor">角色</option></select>
+                        <button class="primary" type="submit">搜索</button>
+                    </form>
+                    <div class="search-filters">
+                        <select id="searchOrder" aria-label="排序"><option value="mr">最新更新</option><option value="mv">最多浏览</option><option value="mp">页数最多</option><option value="tf">最多喜欢</option></select>
+                        <select id="searchCategory" aria-label="分类"><option value="0">全部分类</option><option value="doujin">同人</option><option value="single">单本</option><option value="short">短篇</option><option value="hanman">韩漫</option><option value="meiman">美漫</option><option value="3D">3D</option></select>
+                    </div>
+                    <div id="searchResults" class="search-results"><div class="empty">搜索结果会显示在这里。</div></div>
+                    <div id="pagination" class="pagination" hidden><button id="prevPage" class="secondary" type="button">上一页</button><span id="pageInfo" class="meta"></span><button id="nextPage" class="secondary" type="button">下一页</button></div>
+                </div>
+            </section>
+        </section>
+        <div class="footer">文件保存在服务端目录，过期自动移除。</div>
+    </main>
+    <script>
+        const $ = id => document.getElementById(id);
+        let ids = [];
+        let maxIdsPerTask = null;
+        let searchPage = 1;
+
+        function escapeHtml(value) {
+            return String(value ?? '').replace(/[&<>'"]/g, character => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+            }[character]));
+        }
+
+        async function parseResponse(response) {
+            if (response.status === 401) {
+                location.replace('/');
+                throw new Error('登录已失效');
+            }
+
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.detail);
+            }
+            return data;
+        }
+
+        function renderStatus(task) {
+            const labels = {
+                completed: '下载完成',
+                failed: '任务失败',
+                downloading: '正在下载',
+                packing: '正在打包'
+            };
+            $('statusText').textContent = labels[task.status] || '准备中';
+            $('statusMessage').textContent = task.error || task.message || '';
+            $('completed').textContent = `${task.completed || 0} 页`;
+            $('total').textContent = task.total ? `${task.total} 页` : '-';
+            $('progress').hidden = false;
+            $('progress').value = task.completed || 0;
+            $('progress').max = task.total || 1;
+            $('dot').className = `dot ${task.status === 'completed' ? 'done' : task.status === 'failed' ? 'error' : 'active'}`;
+
+            if (task.status === 'completed') {
+                $('download').hidden = false;
+                $('download').href = `/api/tasks/${task.task_id}/file`;
+            }
+        }
+
+        async function loadSettings() {
+            try {
+                const response = await fetch('/api/settings');
+                const settings = await parseResponse(response);
+                maxIdsPerTask = settings.max_ids_per_task;
+                $('idsHint').textContent = `多个车号用空格或换行分隔，单次最多 ${maxIdsPerTask} 个。`;
+            } catch (error) {
+                $('statusMessage').textContent = `读取配置失败：${error.message}`;
+            }
+        }
+
+        $('preview').onclick = async () => {
+            try {
+                ids = $('ids').value.trim().split(/\s+/).filter(Boolean);
+                if (maxIdsPerTask !== null && ids.length > maxIdsPerTask) {
+                    throw new Error(`单次最多提交 ${maxIdsPerTask} 个车号`);
+                }
+                const response = await fetch('/api/preview', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ids })
+                });
+                const data = await parseResponse(response);
+                $('previewList').innerHTML = data.items.map(item => `
+                    <div class="item">
+                        <div class="item-title">${item.title}</div>
+                        <div class="meta">
+                            车号 ${item.id} · ${item.chapters} 章节 · ${item.pages} 页<br>
+                            作者：${item.authors.join(', ') || '-'}
+                        </div>
+                    </div>
+                `).join('');
+                $('start').disabled = false;
+                $('statusMessage').textContent = '预览完成，可以开始下载。';
+            } catch (error) {
+                $('statusMessage').textContent = `预览失败：${error.message}`;
+            }
+        };
+
+        $('start').onclick = async () => {
+            try {
+                $('start').disabled = true;
+                const response = await fetch('/api/tasks', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ids })
+                });
+                const data = await parseResponse(response);
+                const events = new EventSource(`/api/tasks/${data.task_id}/events`);
+                events.onmessage = event => {
+                    const task = JSON.parse(event.data);
+                    renderStatus(task);
+                    if (['completed', 'failed'].includes(task.status)) {
+                        events.close();
+                    }
+                };
+            } catch (error) {
+                $('statusMessage').textContent = `创建失败：${error.message}`;
+                $('start').disabled = false;
+            }
+        };
+
+        $('logout').onclick = async () => {
+            await fetch('/api/session', { method: 'DELETE' });
+            location.replace('/');
+        };
+
+        function switchView(view) {
+            const isSearch = view === 'search';
+            $('downloadView').hidden = isSearch;
+            $('searchView').hidden = !isSearch;
+            $('downloadMode').classList.toggle('active', !isSearch);
+            $('searchMode').classList.toggle('active', isSearch);
+        }
+
+        function renderSearchResults(data) {
+            $('searchCount').textContent = `${data.total} 个结果`;
+            $('searchResults').innerHTML = data.items.length ? data.items.map(item => {
+                const tags = item.tags.slice(0, 5).map(tag => `<span class="tag">${escapeHtml(tag)}</span>`).join('');
+                const cover = item.image
+                    ? `<img src="${escapeHtml(item.image)}" alt="" onerror="this.parentElement.textContent='${escapeHtml(item.title.slice(0, 1) || 'J')}'">`
+                    : escapeHtml(item.title.slice(0, 1) || 'J');
+                return `<article class="search-card">
+                    <div class="cover">${cover}</div>
+                    <div class="search-card-body">
+                        <div class="item-title">${escapeHtml(item.title)}</div>
+                        <div class="meta">车号 ${escapeHtml(item.id)} · ${escapeHtml(item.author || '未知作者')}<br>${escapeHtml(item.category || '未分类')} ${escapeHtml(item.date)}</div>
+                        <div class="tag-list">${tags || '<span class="tag">暂无标签</span>'}</div>
+                        <button class="primary card-action" type="button" data-download-id="${escapeHtml(item.id)}">加入下载</button>
+                    </div>
+                </article>`;
+            }).join('') : '<div class="empty">没有找到匹配的漫画。</div>';
+            $('pagination').hidden = data.page_count <= 1;
+            $('pageInfo').textContent = `第 ${data.page} / ${data.page_count} 页`;
+            $('prevPage').disabled = data.page <= 1;
+            $('nextPage').disabled = data.page >= data.page_count;
+            document.querySelectorAll('[data-download-id]').forEach(button => {
+                button.onclick = () => {
+                    const currentIds = $('ids').value.trim();
+                    const newId = button.dataset.downloadId;
+                    const existingIds = currentIds ? currentIds.split(/\s+/) : [];
+                    if (!existingIds.includes(newId)) {
+                        $('ids').value = [...existingIds, newId].join('\n');
+                    }
+                    switchView('download');
+                    $('statusMessage').textContent = '已加入车号，请预览信息后开始下载。';
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                };
+            });
+        }
+
+        async function runSearch(page = 1) {
+            const query = $('searchQuery').value.trim();
+            if (!query) {
+                $('searchResults').innerHTML = '<div class="empty">请输入搜索关键词。</div>';
+                return;
+            }
+            searchPage = page;
+            $('searchResults').innerHTML = '<div class="empty">正在搜索，请稍候……</div>';
+            try {
+                const response = await fetch('/api/search', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        query,
+                        page,
+                        search_type: $('searchType').value,
+                        order_by: $('searchOrder').value,
+                        category: $('searchCategory').value
+                    })
+                });
+                renderSearchResults(await parseResponse(response));
+            } catch (error) {
+                $('searchCount').textContent = '搜索失败';
+                $('searchResults').innerHTML = `<div class="empty">${escapeHtml(error.message)}</div>`;
+                $('pagination').hidden = true;
+            }
+        }
+
+        $('downloadMode').onclick = () => switchView('download');
+        $('searchMode').onclick = () => switchView('search');
+        $('searchForm').onsubmit = event => {
+            event.preventDefault();
+            runSearch(1);
+        };
+        $('prevPage').onclick = () => runSearch(searchPage - 1);
+        $('nextPage').onclick = () => runSearch(searchPage + 1);
+
+        loadSettings();
+    </script>
+</body>
+
+</html>

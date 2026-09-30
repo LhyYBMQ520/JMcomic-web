@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <title>登录 - JMComic Web</title>
+    <style>
+        :root {
+            font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+            color: #172033;
+            background: #f5f7fb;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            display: grid;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            place-items: center;
+        }
+
+        .login {
+            width: min(400px, 100%);
+            padding: 30px;
+            background: #fff;
+            border: 1px solid #e4e9f1;
+            border-radius: 8px;
+            box-shadow: 0 18px 45px #1c2a4214;
+        }
+
+        .mark {
+            display: grid;
+            width: 42px;
+            height: 42px;
+            margin-bottom: 24px;
+            color: #fff;
+            font-size: 21px;
+            font-weight: 750;
+            background: #16233b;
+            border-radius: 10px;
+            place-items: center;
+        }
+
+        h1 {
+            margin: 0 0 8px;
+            font-size: 25px;
+        }
+
+        p {
+            margin: 0 0 24px;
+            color: #77839a;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #536079;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 14px;
+            color: #172033;
+            font: inherit;
+            background: #fbfcfe;
+            border: 1px solid #d5dce8;
+            border-radius: 6px;
+            outline: 0;
+        }
+
+        input:focus {
+            border-color: #4774d1;
+            box-shadow: 0 0 0 3px #e5edff;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 14px;
+            padding: 12px 16px;
+            color: #fff;
+            font: inherit;
+            font-weight: 700;
+            cursor: pointer;
+            background: #285dcc;
+            border: 0;
+            border-radius: 6px;
+            transition: background 160ms ease, transform 160ms ease-out;
+        }
+
+        button:active {
+            transform: scale(.97);
+        }
+
+        button:disabled {
+            cursor: default;
+            opacity: .55;
+        }
+
+        .error {
+            min-height: 20px;
+            margin-top: 12px;
+            color: #c43d3d;
+            font-size: 13px;
+        }
+
+        .warning {
+            margin: 0 0 20px;
+            padding: 11px 12px;
+            color: #744d13;
+            font-size: 13px;
+            line-height: 1.55;
+            background: #fff8e8;
+            border: 1px solid #f0d99f;
+            border-radius: 6px;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            button {
+                transition: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="login">
+        <div class="mark">J</div>
+        <h1>访问下载页面</h1>
+        <p>请输入管理员分配的访问令牌。验证成功后才能进入主页和创建下载任务。</p>
+        <div class="warning" role="note">
+            禁止多人共用同一账户。共用令牌会共享任务配额和下载权限，可能造成任务互相占用、文件被他人访问，且令牌重置或账户禁用会使所有共用会话同时失效。
+        </div>
+        <form id="form">
+            <label for="token">访问令牌</label>
+            <input id="token" type="password" autocomplete="current-password" autofocus required>
+            <button id="submit" type="submit">进入主页</button>
+            <div id="error" class="error" role="alert"></div>
+        </form>
+    </main>
+
+    <script>
+        const form = document.getElementById('form');
+        const button = document.getElementById('submit');
+        const errorMessage = document.getElementById('error');
+
+        form.onsubmit = async event => {
+            event.preventDefault();
+            button.disabled = true;
+            errorMessage.textContent = '';
+
+            try {
+                const token = document.getElementById('token').value.trim();
+                const response = await fetch('/api/session', {
+                    method: 'POST',
+                    headers: { 'X-Access-Token': token }
+                });
+
+                if (!response.ok) {
+                    const data = await response.json();
+                    throw new Error(data.detail || '验证失败');
+                }
+                location.replace('/app');
+            } catch (error) {
+                errorMessage.textContent = error.message;
+                button.disabled = false;
+            }
+        };
+    </script>
+</body>
+
+</html>
