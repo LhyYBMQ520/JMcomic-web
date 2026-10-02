@@ -8,9 +8,24 @@
     <title>登录 - JMComic Web</title>
     <style>
         :root {
+            --accent: #ff9900;
+            --accent-hover: #eb8900;
+            --accent-ink: #402300;
+            --link: #9a4b00;
+            --accent-soft: #fff1dc;
+            --focus: #a95100;
+            --focus-ring: #ffe3ba;
+            --text: #302a24;
+            --muted: #786b5e;
+            --border: #eadfce;
+            --page: #fff8ef;
+            --surface-muted: #fffcf7;
+            --track: #f4e8d8;
+            --shadow: #6c3b100f;
+
             font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-            color: #172033;
-            background: #f5f7fb;
+            color: var(--text);
+            background: var(--page);
         }
 
         * {
@@ -29,22 +44,24 @@
             width: min(400px, 100%);
             padding: 30px;
             background: #fff;
-            border: 1px solid #e4e9f1;
+            border: 1px solid var(--border);
             border-radius: 8px;
-            box-shadow: 0 18px 45px #1c2a4214;
+            box-shadow: 0 18px 45px #6c3b1014;
         }
 
         .mark {
-            display: grid;
+            display: block;
+            flex: none;
             width: 42px;
             height: 42px;
             margin-bottom: 24px;
-            color: #fff;
-            font-size: 21px;
-            font-weight: 750;
-            background: #16233b;
-            border-radius: 10px;
-            place-items: center;
+        }
+
+        .mark img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
         }
 
         h1 {
@@ -54,7 +71,7 @@
 
         p {
             margin: 0 0 24px;
-            color: #77839a;
+            color: var(--muted);
             font-size: 14px;
             line-height: 1.6;
         }
@@ -62,7 +79,7 @@
         label {
             display: block;
             margin-bottom: 8px;
-            color: #536079;
+            color: #64584b;
             font-size: 13px;
             font-weight: 700;
         }
@@ -70,28 +87,28 @@
         input {
             width: 100%;
             padding: 12px 14px;
-            color: #172033;
+            color: var(--text);
             font: inherit;
-            background: #fbfcfe;
-            border: 1px solid #d5dce8;
+            background: var(--surface-muted);
+            border: 1px solid var(--border);
             border-radius: 6px;
             outline: 0;
         }
 
         input:focus {
-            border-color: #4774d1;
-            box-shadow: 0 0 0 3px #e5edff;
+            border-color: var(--focus);
+            box-shadow: 0 0 0 3px var(--focus-ring);
         }
 
         button {
             width: 100%;
             margin-top: 14px;
             padding: 12px 16px;
-            color: #fff;
+            color: var(--accent-ink);
             font: inherit;
             font-weight: 700;
             cursor: pointer;
-            background: #285dcc;
+            background: var(--accent);
             border: 0;
             border-radius: 6px;
             transition: background 160ms ease, transform 160ms ease-out;
@@ -129,12 +146,23 @@
                 transition: none;
             }
         }
+
+        button:focus-visible, a:focus-visible, input:focus-visible,
+        select:focus-visible, textarea:focus-visible {
+            outline: 2px solid var(--focus);
+            outline-offset: 3px;
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .primary:not(:disabled):hover { background: var(--accent-hover); }
+            button:not(:disabled):hover { background: var(--accent-hover); }
+        }
     </style>
 </head>
 
 <body>
     <main class="login">
-        <div class="mark">J</div>
+        <div class="mark"><img src="/favicon.ico" alt="JMComic 看板娘" width="42" height="42"></div>
         <h1>访问下载页面</h1>
         <p>请输入管理员分配的访问令牌。验证成功后才能进入主页和创建下载任务。</p>
         <div class="warning" role="note">

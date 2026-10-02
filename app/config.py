@@ -27,6 +27,18 @@ base_dir = "data/downloads"
 # 下载完成后生成的 ZIP 保存目录。路径规则同 base_dir。
 archive_dir = "data/archives"
 
+[reader]
+# 在线阅读图片缓存目录，与整本下载目录分开。
+cache_dir = "data/reader"
+# 阅读图片缓存保留时间（分钟），按最近访问时间计算，最小为 1。
+retention_minutes = 30
+# 阅读图片缓存容量上限（MiB），最小为 1；超出时优先清理较早访问的图片。
+max_cache_mb = 512
+# 推荐、详情和章节信息的内存缓存时间（秒），最小为 1。
+metadata_ttl_seconds = 300
+# 在线阅读时提前加载的后续页数，范围为 0-3。
+preload_pages = 2
+
 [database]
 # SQLite 数据库文件路径。相对路径以项目根目录为基准。
 path = "data/app.db"

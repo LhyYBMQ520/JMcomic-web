@@ -82,6 +82,11 @@ def search(
         time=time,
         category=category,
     )
+    return serialize_page(search_page, page)
+
+
+def serialize_page(search_page: Any, fallback_page: int = 1) -> dict[str, Any]:
+    """Share the card format between search results and category rankings."""
     items = []
     for album_id, info in search_page.content:
         image_url = str(info.get("image") or "")
@@ -99,7 +104,7 @@ def search(
     return {
         "items": items,
         "total": int(search_page.total),
-        "page": int(search_page.page_number or page),
+        "page": int(search_page.page_number or fallback_page),
         "page_count": int(search_page.page_count),
     }
 

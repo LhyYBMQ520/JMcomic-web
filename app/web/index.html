@@ -8,14 +8,31 @@
     <title>JMComic Web</title>
     <style>
         :root {
+            --accent: #ff9900;
+            --accent-hover: #eb8900;
+            --accent-ink: #402300;
+            --link: #9a4b00;
+            --accent-soft: #fff1dc;
+            --focus: #a95100;
+            --focus-ring: #ffe3ba;
+            --text: #302a24;
+            --muted: #786b5e;
+            --border: #eadfce;
+            --page: #fff8ef;
+            --surface-muted: #fffcf7;
+            --track: #f4e8d8;
+            --shadow: #6c3b100f;
+
             font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-            color: #172033;
-            background: #f5f7fb
+            color: var(--text);
+            background: var(--page)
         }
 
         * {
             box-sizing: border-box
         }
+
+        [hidden] { display: none !important; }
 
         body {
             margin: 0;
@@ -43,18 +60,21 @@
         }
 
         .mark {
+            display: block;
+            flex: none;
             width: 38px;
             height: 38px;
-            border-radius: 10px;
-            display: grid;
-            place-items: center;
-            background: #16233b;
-            color: #fff;
-            font-size: 20px
+        }
+
+        .mark img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
         }
 
         .eyebrow {
-            color: #73809a;
+            color: var(--muted);
             font-size: 12px;
             font-weight: 700;
             text-transform: uppercase;
@@ -68,7 +88,7 @@
         }
 
         .lead {
-            color: #66728a;
+            color: var(--muted);
             max-width: 610px;
             line-height: 1.65;
             margin: 0
@@ -83,14 +103,14 @@
 
         .panel {
             background: #fff;
-            border: 1px solid #e4e9f1;
+            border: 1px solid var(--border);
             border-radius: 8px;
-            box-shadow: 0 8px 24px #1c2a420f
+            box-shadow: 0 8px 24px var(--shadow)
         }
 
         .panel-head {
             padding: 20px 22px 14px;
-            border-bottom: 1px solid #edf0f5;
+            border-bottom: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
             align-items: center
@@ -109,7 +129,7 @@
             display: block;
             font-size: 13px;
             font-weight: 700;
-            color: #536079;
+            color: #64584b;
             margin-bottom: 8px
         }
 
@@ -117,19 +137,19 @@
             width: 100%;
             min-height: 120px;
             resize: vertical;
-            border: 1px solid #d5dce8;
+            border: 1px solid var(--border);
             border-radius: 6px;
             padding: 14px;
-            color: #172033;
-            background: #fbfcfe;
+            color: var(--text);
+            background: var(--surface-muted);
             font: inherit;
             line-height: 1.5;
             outline: 0
         }
 
         textarea:focus {
-            border-color: #4774d1;
-            box-shadow: 0 0 0 3px #e5edff
+            border-color: var(--focus);
+            box-shadow: 0 0 0 3px var(--focus-ring)
         }
 
         .actions {
@@ -153,25 +173,25 @@
         }
 
         button.primary {
-            background: #285dcc;
-            color: #fff
+            background: var(--accent);
+            color: var(--accent-ink)
         }
 
         @media (hover: hover) and (pointer: fine) {
             button.primary:hover {
-                background: #204eae
+                background: var(--accent-hover)
             }
         }
 
         button.secondary {
-            background: #edf2fb;
-            color: #31569c
+            background: var(--accent-soft);
+            color: var(--link)
         }
 
         button.logout {
             padding: 8px 10px;
             background: transparent;
-            color: #647089
+            color: var(--muted)
         }
 
         button:disabled {
@@ -180,7 +200,7 @@
         }
 
         .hint {
-            color: #8994a8;
+            color: var(--muted);
             font-size: 12px;
             margin-top: 10px
         }
@@ -191,7 +211,7 @@
 
         .item {
             padding: 14px 0;
-            border-bottom: 1px solid #edf0f5
+            border-bottom: 1px solid var(--border)
         }
 
         .item:last-child {
@@ -204,7 +224,7 @@
         }
 
         .meta {
-            color: #77839a;
+            color: var(--muted);
             font-size: 13px;
             line-height: 1.6
         }
@@ -225,12 +245,12 @@
             width: 9px;
             height: 9px;
             border-radius: 50%;
-            background: #c4cad5
+            background: #d5c8b8
         }
 
         .dot.active {
-            background: #3b72d9;
-            box-shadow: 0 0 0 4px #e6eeff
+            background: var(--accent);
+            box-shadow: 0 0 0 4px var(--focus-ring)
         }
 
         .dot.done {
@@ -252,32 +272,32 @@
         progress {
             width: 100%;
             height: 9px;
-            accent-color: #356bd2
+            accent-color: var(--focus)
         }
 
         .numbers {
             display: flex;
             justify-content: space-between;
-            color: #77839a;
+            color: var(--muted);
             font-size: 13px
         }
 
         .download-link {
             display: inline-block;
             margin-top: 16px;
-            color: #285dcc;
+            color: var(--accent);
             font-weight: 750;
             text-decoration: none
         }
 
         .empty {
-            color: #9aa4b5;
+            color: var(--muted);
             font-size: 13px;
             padding: 18px 0
         }
 
         .footer {
-            color: #929caf;
+            color: var(--muted);
             font-size: 12px;
             margin-top: 24px
         }
@@ -286,7 +306,7 @@
             display: flex;
             gap: 4px;
             padding: 4px;
-            background: #e9eef7;
+            background: var(--track);
             border-radius: 8px;
             margin-bottom: 28px
         }
@@ -295,13 +315,13 @@
             flex: 1;
             padding: 10px 14px;
             background: transparent;
-            color: #647089
+            color: var(--muted)
         }
 
         .mode-switch button.active {
-            background: #fff;
-            color: #1d3768;
-            box-shadow: 0 2px 8px #1c2a4214
+            background: var(--accent);
+            color: var(--accent-ink);
+            box-shadow: 0 2px 8px #6c3b1014
         }
 
         .view[hidden] {
@@ -317,18 +337,18 @@
 
         input, select {
             width: 100%;
-            border: 1px solid #d5dce8;
+            border: 1px solid var(--border);
             border-radius: 6px;
             padding: 11px 12px;
-            color: #172033;
-            background: #fbfcfe;
+            color: var(--text);
+            background: var(--surface-muted);
             font: inherit;
             outline: 0
         }
 
         input:focus, select:focus {
-            border-color: #4774d1;
-            box-shadow: 0 0 0 3px #e5edff
+            border-color: var(--focus);
+            box-shadow: 0 0 0 3px var(--focus-ring)
         }
 
         .search-filters {
@@ -352,13 +372,14 @@
             min-width: 0;
             flex-direction: column;
             align-items: stretch;
-            border: 1px solid #e4e9f1;
+            border: 1px solid var(--border);
             border-radius: 6px;
             overflow: hidden;
             background: #fff
         }
 
         .cover {
+            text-decoration: none;
             position: relative;
             width: 100%;
             aspect-ratio: 3 / 4;
@@ -367,8 +388,8 @@
             flex: none;
             display: grid;
             place-items: center;
-            color: #6d7c99;
-            background: #eef2f8;
+            color: var(--muted);
+            background: var(--track);
             font-size: 28px;
             font-weight: 800
         }
@@ -408,8 +429,8 @@
         .tag {
             padding: 3px 7px;
             border-radius: 4px;
-            color: #58709c;
-            background: #edf2fb;
+            color: var(--link);
+            background: var(--accent-soft);
             font-size: 11px
         }
 
@@ -418,6 +439,12 @@
             margin-top: auto;
             padding: 9px 10px
         }
+
+        a.item-title { color: inherit; text-decoration: none; }
+        a.item-title:hover { color: var(--focus); }
+        .cover:focus-visible { outline: 3px solid var(--focus); outline-offset: -3px; }
+        .recommend-heading { margin: 30px 0 14px; }
+        .recommend-heading h2 { margin: 0 0 8px; font-size: 24px; }
 
         .pagination {
             display: flex;
@@ -467,6 +494,16 @@
                 transition: none
             }
         }
+
+        button:focus-visible, a:focus-visible, input:focus-visible,
+        select:focus-visible, textarea:focus-visible {
+            outline: 2px solid var(--focus);
+            outline-offset: 3px;
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .primary:not(:disabled):hover { background: var(--accent-hover); }
+        }
     </style>
 </head>
 
@@ -474,7 +511,7 @@
     <main class="shell">
         <header class="topbar">
             <div class="brand">
-                <div class="mark">J</div><span>JMComic Download</span>
+                <div class="mark"><img src="/favicon.ico" alt="JMComic 看板娘" width="38" height="38"></div><span>JMComic Download</span>
             </div>
             <button id="logout" class="logout" type="button">退出登录</button>
         </header>
@@ -539,6 +576,21 @@
                     <div id="pagination" class="pagination" hidden><button id="prevPage" class="secondary" type="button">上一页</button><span id="pageInfo" class="meta"></span><button id="nextPage" class="secondary" type="button">下一页</button></div>
                 </div>
             </section>
+            <div class="recommend-heading">
+                <h2>漫画推荐</h2>
+                <p class="lead">看看热门榜单与最新更新。点击封面查看简介、章节并在线阅读。</p>
+            </div>
+            <section class="panel" aria-label="漫画推荐">
+                <div class="panel-body">
+                    <div class="search-filters">
+                        <select id="recommendKind" aria-label="推荐榜单"><option value="week">周榜热门</option><option value="day">日榜热门</option><option value="month">月榜热门</option><option value="latest">最新更新</option></select>
+                        <select id="recommendCategory" aria-label="推荐分类"><option value="0">全部分类</option><option value="doujin">同人</option><option value="single">单本</option><option value="short">短篇</option><option value="hanman">韩漫</option><option value="meiman">美漫</option><option value="3D">3D</option></select>
+                        <button id="recommendRetry" class="secondary" type="button">重新加载</button>
+                    </div>
+                    <div id="recommendResults" class="search-results" aria-live="polite"><div class="empty">打开搜索页后加载推荐。</div></div>
+                    <div id="recommendPagination" class="pagination" hidden><button id="recommendPrev" class="secondary" type="button">上一页</button><span id="recommendPageInfo" class="meta"></span><button id="recommendNext" class="secondary" type="button">下一页</button></div>
+                </div>
+            </section>
         </section>
         <div class="footer">文件保存在服务端目录，过期自动移除。</div>
     </main>
@@ -547,6 +599,10 @@
         let ids = [];
         let maxIdsPerTask = null;
         let searchPage = 1;
+        let recommendPage = 1;
+        let recommendationsLoaded = false;
+        let recommendationRequest = 0;
+        let searchRequest = 0;
 
         function escapeHtml(value) {
             return String(value ?? '').replace(/[&<>'"]/g, character => ({
@@ -614,10 +670,10 @@
                 const data = await parseResponse(response);
                 $('previewList').innerHTML = data.items.map(item => `
                     <div class="item">
-                        <div class="item-title">${item.title}</div>
+                        <div class="item-title">${escapeHtml(item.title)}</div>
                         <div class="meta">
-                            车号 ${item.id} · ${item.chapters} 章节 · ${item.pages} 页<br>
-                            作者：${item.authors.join(', ') || '-'}
+                            车号 ${escapeHtml(item.id)} · ${item.chapters} 章节 · ${item.pages} 页<br>
+                            作者：${escapeHtml(item.authors.join(', ') || '-')}
                         </div>
                     </div>
                 `).join('');
@@ -662,30 +718,30 @@
             $('searchView').hidden = !isSearch;
             $('downloadMode').classList.toggle('active', !isSearch);
             $('searchMode').classList.toggle('active', isSearch);
+            if (isSearch && !recommendationsLoaded) loadRecommendations();
         }
 
-        function renderSearchResults(data) {
-            $('searchCount').textContent = `${data.total} 个结果`;
-            $('searchResults').innerHTML = data.items.length ? data.items.map(item => {
+        function renderCards(container, items) {
+            container.innerHTML = items.length ? items.map(item => {
+                const detailUrl = `/albums/${encodeURIComponent(item.id)}`;
                 const tags = item.tags.slice(0, 5).map(tag => `<span class="tag">${escapeHtml(tag)}</span>`).join('');
                 const cover = item.image
-                    ? `<img src="${escapeHtml(item.image)}" alt="" onerror="this.parentElement.textContent='${escapeHtml(item.title.slice(0, 1) || 'J')}'">`
+                    ? `<img src="${escapeHtml(item.image)}" alt="" loading="lazy" referrerpolicy="no-referrer">`
                     : escapeHtml(item.title.slice(0, 1) || 'J');
                 return `<article class="search-card">
-                    <div class="cover">${cover}</div>
+                    <a class="cover" href="${detailUrl}" aria-label="${escapeHtml('查看详情：' + item.title)}">${cover}</a>
                     <div class="search-card-body">
-                        <div class="item-title">${escapeHtml(item.title)}</div>
+                        <a class="item-title" href="${detailUrl}">${escapeHtml(item.title)}</a>
                         <div class="meta">车号 ${escapeHtml(item.id)} · ${escapeHtml(item.author || '未知作者')}<br>${escapeHtml(item.category || '未分类')} ${escapeHtml(item.date)}</div>
                         <div class="tag-list">${tags || '<span class="tag">暂无标签</span>'}</div>
                         <button class="primary card-action" type="button" data-download-id="${escapeHtml(item.id)}">加入下载</button>
                     </div>
                 </article>`;
             }).join('') : '<div class="empty">没有找到匹配的漫画。</div>';
-            $('pagination').hidden = data.page_count <= 1;
-            $('pageInfo').textContent = `第 ${data.page} / ${data.page_count} 页`;
-            $('prevPage').disabled = data.page <= 1;
-            $('nextPage').disabled = data.page >= data.page_count;
-            document.querySelectorAll('[data-download-id]').forEach(button => {
+            container.querySelectorAll('.cover img').forEach(image => {
+                image.onerror = () => { image.parentElement.textContent = '暂无封面'; };
+            });
+            container.querySelectorAll('[data-download-id]').forEach(button => {
                 button.onclick = () => {
                     const currentIds = $('ids').value.trim();
                     const newId = button.dataset.downloadId;
@@ -700,6 +756,36 @@
             });
         }
 
+        function renderSearchResults(data) {
+            $('searchCount').textContent = `${data.total} 个结果`;
+            renderCards($('searchResults'), data.items);
+            $('pagination').hidden = data.page_count <= 1;
+            $('pageInfo').textContent = `第 ${data.page} / ${data.page_count} 页`;
+            $('prevPage').disabled = data.page <= 1;
+            $('nextPage').disabled = data.page >= data.page_count;
+        }
+
+        async function loadRecommendations(page = 1) {
+            recommendationsLoaded = true;
+            const requestId = ++recommendationRequest;
+            $('recommendResults').innerHTML = '<div class="empty">正在加载推荐……</div>';
+            $('recommendPagination').hidden = true;
+            try {
+                const params = new URLSearchParams({ kind: $('recommendKind').value, category: $('recommendCategory').value, page });
+                const data = await parseResponse(await fetch(`/api/recommendations?${params}`));
+                if (requestId !== recommendationRequest) return;
+                recommendPage = data.page;
+                renderCards($('recommendResults'), data.items);
+                $('recommendPagination').hidden = data.page_count <= 1;
+                $('recommendPageInfo').textContent = `第 ${data.page} / ${data.page_count} 页`;
+                $('recommendPrev').disabled = data.page <= 1;
+                $('recommendNext').disabled = data.page >= data.page_count;
+            } catch (error) {
+                if (requestId !== recommendationRequest) return;
+                $('recommendResults').innerHTML = `<div class="empty">推荐加载失败：${escapeHtml(error.message)}。可点击重新加载。</div>`;
+            }
+        }
+
         async function runSearch(page = 1) {
             const query = $('searchQuery').value.trim();
             if (!query) {
@@ -707,7 +793,9 @@
                 return;
             }
             searchPage = page;
+            const requestId = ++searchRequest;
             $('searchResults').innerHTML = '<div class="empty">正在搜索，请稍候……</div>';
+            $('pagination').hidden = true;
             try {
                 const response = await fetch('/api/search', {
                     method: 'POST',
@@ -720,8 +808,10 @@
                         category: $('searchCategory').value
                     })
                 });
-                renderSearchResults(await parseResponse(response));
+                const data = await parseResponse(response);
+                if (requestId === searchRequest) renderSearchResults(data);
             } catch (error) {
+                if (requestId !== searchRequest) return;
                 $('searchCount').textContent = '搜索失败';
                 $('searchResults').innerHTML = `<div class="empty">${escapeHtml(error.message)}</div>`;
                 $('pagination').hidden = true;
@@ -736,8 +826,19 @@
         };
         $('prevPage').onclick = () => runSearch(searchPage - 1);
         $('nextPage').onclick = () => runSearch(searchPage + 1);
+        $('recommendKind').onchange = () => loadRecommendations(1);
+        $('recommendCategory').onchange = () => loadRecommendations(1);
+        $('recommendRetry').onclick = () => loadRecommendations(recommendPage);
+        $('recommendPrev').onclick = () => loadRecommendations(recommendPage - 1);
+        $('recommendNext').onclick = () => loadRecommendations(recommendPage + 1);
 
         loadSettings();
+        if (location.hash === '#search') switchView('search');
+        const incomingId = new URLSearchParams(location.search).get('album');
+        if (incomingId && /^[0-9]+$/.test(incomingId)) {
+            $('ids').value = incomingId;
+            $('statusMessage').textContent = '已加入车号，请预览信息后开始下载。';
+        }
     </script>
 </body>
 

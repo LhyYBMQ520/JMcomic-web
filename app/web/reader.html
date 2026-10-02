@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <title>漫画详情 · JMComic Web</title>
+    <style>
+        :root {
+            --accent: #ff9900;
+            --accent-hover: #eb8900;
+            --accent-ink: #402300;
+            --link: #9a4b00;
+            --accent-soft: #fff1dc;
+            --focus: #a95100;
+            --focus-ring: #ffe3ba;
+            --text: #302a24;
+            --muted: #786b5e;
+            --border: #eadfce;
+            --page: #fff8ef;
+            --surface-muted: #fffcf7;
+            --track: #f4e8d8;
+            --shadow: #6c3b100f;
+            font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+            color: var(--text);
+            background: var(--page);
+        }
+        * { box-sizing: border-box; }
+        body { margin: 0; }
+        [hidden] { display: none !important; }
+        .shell { max-width: 1080px; margin: auto; padding: 30px 24px 56px; }
+        .topbar, .brand, .actions, .reader-controls { display: flex; align-items: center; gap: 12px; }
+        .topbar { justify-content: space-between; margin-bottom: 30px; flex-wrap: wrap; }
+        .brand { color: inherit; text-decoration: none; font-weight: 750; }
+        .mark {
+            display: block;
+            flex: none;
+            width: 38px;
+            height: 38px;
+        }
+
+        .mark img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        a { color: var(--link); }
+        button, .button { display: inline-block; border: 0; border-radius: 6px; padding: 11px 16px; font: inherit; font-weight: 650; cursor: pointer; text-decoration: none; background: var(--accent-soft); color: var(--link); }
+        button:disabled { opacity: .5; cursor: not-allowed; }
+        button:focus-visible, a:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+        .primary { background: var(--accent); color: var(--accent-ink); }
+        .panel { background: white; border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 8px 24px var(--shadow); padding: 24px; }
+        .book { display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 28px; }
+        .cover { display: grid; place-items: center; aspect-ratio: 3 / 4; background: var(--track); border-radius: 6px; overflow: hidden; align-self: start; color: var(--muted); }
+        .cover img { width: 100%; height: 100%; object-fit: cover; }
+        .eyebrow { color: var(--muted); font-size: 12px; font-weight: 700; letter-spacing: .08em; margin: 0 0 10px; }
+        h1 { font-size: clamp(24px, 3vw, 36px); line-height: 1.4; margin: 0 0 14px; overflow-wrap: anywhere; }
+        h2 { font-size: 20px; margin: 0 0 16px; }
+        .meta, .hint { color: var(--muted); line-height: 1.8; font-size: 14px; }
+        .tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 16px 0; }
+        .tag { font-size: 12px; padding: 4px 9px; color: var(--link); background: var(--accent-soft); border-radius: 4px; }
+        .description { white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.85; color: #64584b; margin-bottom: 22px; }
+        .actions { flex-wrap: wrap; }
+        .chapters { margin-top: 24px; }
+        .chapter-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; max-height: 360px; overflow: auto; }
+        .chapter-list button { text-align: left; font-weight: 500; overflow-wrap: anywhere; }
+        .chapter-list button.active { color: var(--accent-ink); background: var(--accent); }
+        .reader { margin-top: 28px; scroll-margin-top: 16px; }
+        .reader-controls { flex-wrap: wrap; justify-content: center; margin: 16px 0; }
+        select, input { padding: 10px; font: inherit; border: 1px solid var(--border); border-radius: 6px; background: white; color: var(--text); }
+        select { max-width: min(100%, 350px); }
+        input { width: 76px; }
+        .page-stage { background: var(--track); border-radius: 6px; min-height: 160px; padding: 12px; text-align: center; }
+        .page-stage img { display: block; width: auto; max-width: 100%; height: auto; margin: auto; }
+        .message { padding: 20px 0; line-height: 1.8; color: var(--muted); }
+        .error { color: #b33939; }
+        .center { text-align: center; }
+        @media (max-width: 650px) {
+            .shell { padding: 20px 14px 40px; }
+            .panel { padding: 18px; }
+            .book { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+            .cover { width: 170px; margin: auto; }
+            .reader { padding: 12px; }
+            .page-stage { padding: 0; }
+            .chapter-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+
+        button:focus-visible, a:focus-visible, input:focus-visible,
+        select:focus-visible, textarea:focus-visible {
+            outline: 2px solid var(--focus);
+            outline-offset: 3px;
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .primary:not(:disabled):hover { background: var(--accent-hover); }
+        }
+    </style>
+</head>
+<body>
+    <main class="shell">
+        <header class="topbar">
+            <a class="brand" href="/app#search"><span class="mark"><img src="/favicon.ico" alt="JMComic 看板娘" width="38" height="38"></span><span>JMComic Web</span></a>
+            <div class="actions"><a href="/app#search">返回搜索与推荐</a><button id="logout" type="button">退出登录</button></div>
+        </header>
+        <div id="detailMessage" class="message" role="status">正在加载漫画详情……</div>
+        <button id="detailRetry" type="button" hidden>重新加载详情</button>
+        <section id="book" class="panel book" hidden aria-label="漫画详情">
+            <div id="cover" class="cover"></div>
+            <div>
+                <p id="albumNumber" class="eyebrow"></p>
+                <h1 id="title"></h1>
+                <div id="authors" class="meta"></div>
+                <div id="stats" class="meta"></div>
+                <div id="dates" class="meta"></div>
+                <div id="tags" class="tags" aria-label="漫画标签"></div>
+                <h2>简介</h2>
+                <p id="description" class="description"></p>
+                <div class="actions"><button id="readStart" class="primary" type="button">开始阅读</button><a id="downloadAlbum" class="button" href="/app">加入整本下载</a></div>
+            </div>
+        </section>
+        <section id="chapters" class="panel chapters" hidden>
+            <h2>章节目录</h2>
+            <div id="chapterList" class="chapter-list"></div>
+        </section>
+        <section id="reader" class="panel reader" hidden aria-label="在线阅读">
+            <h2 id="chapterTitle">在线阅读</h2>
+            <div class="reader-controls">
+                <label for="chapterSelect">章节</label><select id="chapterSelect" aria-label="选择章节"></select>
+            </div>
+            <div class="reader-controls">
+                <button id="prevPage" type="button" disabled>上一页</button>
+                <span id="pageInfo" aria-live="polite"></span>
+                <button id="nextPage" type="button" disabled>下一页</button>
+                <form id="jumpForm"><label for="jumpPage">跳至</label> <input id="jumpPage" type="number" min="1" value="1" aria-label="跳转页码" required> <button id="jumpButton" type="submit" disabled>跳转</button></form>
+            </div>
+            <div class="page-stage">
+                <div id="pageMessage" class="message" role="status"></div>
+                <button id="pageRetry" type="button" hidden>重试当前页</button>
+                <img id="pageImage" alt="漫画正文" hidden>
+            </div>
+            <div class="reader-controls"><button id="prevBottom" type="button" disabled>上一页</button><span id="pageInfoBottom"></span><button id="nextBottom" type="button" disabled>下一页</button></div>
+            <p class="hint center">可使用键盘左右方向键翻页。阅读按页加载，无需等待整本下载。</p>
+        </section>
+    </main>
+    <script>
+        const $ = id => document.getElementById(id);
+        const albumId = location.pathname.split('/').filter(Boolean)[1];
+        let album = null;
+        let chapter = null;
+        let chapterIndex = 0;
+        let currentPage = 1;
+        let chapterEpoch = 0;
+        let pageRequest = 0;
+        const pageCache = new Map();
+        const controllers = new Set();
+
+        async function request(url, options = {}) {
+            const response = await fetch(url, options);
+            if (response.status === 401) {
+                location.replace('/');
+                throw new Error('登录已失效');
+            }
+            if (!response.ok) {
+                let detail = '请求失败，请稍后重试';
+                try { detail = (await response.json()).detail || detail; } catch (_) { /* Non-JSON errors from a proxy. */ }
+                throw new Error(detail);
+            }
+            return response;
+        }
+
+        function clearPages() {
+            for (const controller of controllers) controller.abort();
+            controllers.clear();
+            for (const entry of pageCache.values()) if (entry.url) URL.revokeObjectURL(entry.url);
+            pageCache.clear();
+        }
+
+        function trimPages() {
+            for (const [page, entry] of pageCache) {
+                if (entry.url && (page < currentPage - 1 || page > currentPage + album.preload_pages)) {
+                    URL.revokeObjectURL(entry.url);
+                    pageCache.delete(page);
+                }
+            }
+        }
+
+        async function getPage(page) {
+            if (pageCache.has(page)) return pageCache.get(page).promise;
+            const epoch = chapterEpoch;
+            const photoId = chapter.id;
+            const controller = new AbortController();
+            controllers.add(controller);
+            const entry = {};
+            pageCache.set(page, entry);
+            entry.promise = (async () => {
+                try {
+                    const response = await request(`/api/albums/${albumId}/chapters/${photoId}/pages/${page}`, { signal: controller.signal });
+                    const blob = await response.blob();
+                    if (epoch !== chapterEpoch) throw new DOMException('章节已切换', 'AbortError');
+                    entry.url = URL.createObjectURL(blob);
+                    return entry.url;
+                } catch (error) {
+                    if (pageCache.get(page) === entry) pageCache.delete(page);
+                    throw error;
+                } finally { controllers.delete(controller); }
+            })();
+            return entry.promise;
+        }
+
+        function navigation() {
+            const ready = chapter && chapter.pages > 0;
+            const atStart = !ready || (currentPage === 1 && chapterIndex === 0);
+            const atEnd = !ready || (currentPage === chapter.pages && chapterIndex === album.chapters.length - 1);
+            for (const id of ['prevPage', 'prevBottom']) $(id).disabled = atStart;
+            for (const id of ['nextPage', 'nextBottom']) $(id).disabled = atEnd;
+            $('jumpButton').disabled = !ready;
+            $('jumpPage').max = ready ? chapter.pages : 1;
+            $('jumpPage').value = currentPage;
+            $('pageInfo').textContent = ready ? `第 ${currentPage} / ${chapter.pages} 页` : '正在读取章节';
+            $('pageInfoBottom').textContent = $('pageInfo').textContent;
+        }
+
+        async function showPage(page) {
+            if (!chapter || page < 1 || page > chapter.pages) return;
+            currentPage = page;
+            const serial = ++pageRequest;
+            $('pageImage').hidden = true;
+            $('pageMessage').textContent = '正在加载漫画页……';
+            $('pageMessage').className = 'message';
+            $('pageRetry').hidden = true;
+            navigation();
+            const params = new URLSearchParams({ chapter: chapter.id, page });
+            history.replaceState(null, '', `${location.pathname}?${params}`);
+            try {
+                const url = await getPage(page);
+                if (serial !== pageRequest) return;
+                $('pageImage').src = url;
+                $('pageImage').alt = `${chapter.title} · 第 ${page} 页`;
+                $('pageImage').hidden = false;
+                $('pageMessage').textContent = '';
+                trimPages();
+                for (let next = page + 1; next <= Math.min(chapter.pages, page + album.preload_pages); next++) {
+                    getPage(next).then(() => trimPages()).catch(() => {});
+                }
+            } catch (error) {
+                if (serial !== pageRequest || error.name === 'AbortError') return;
+                $('pageMessage').textContent = error.message;
+                $('pageMessage').className = 'message error';
+                $('pageRetry').hidden = false;
+            }
+        }
+
+        async function loadChapter(index, page = 1) {
+            if (!album || !album.chapters[index]) return;
+            const epoch = ++chapterEpoch;
+            ++pageRequest;
+            clearPages();
+            chapter = null;
+            chapterIndex = index;
+            currentPage = 1;
+            $('reader').hidden = false;
+            $('pageImage').hidden = true;
+            $('pageRetry').hidden = true;
+            $('chapterTitle').textContent = album.chapters[index].title;
+            $('chapterSelect').value = String(index);
+            document.querySelectorAll('[data-chapter]').forEach(button => button.classList.toggle('active', Number(button.dataset.chapter) === index));
+            $('pageMessage').textContent = '正在加载章节……';
+            $('pageMessage').className = 'message';
+            navigation();
+            const controller = new AbortController();
+            controllers.add(controller);
+            try {
+                const response = await request(`/api/albums/${albumId}/chapters/${album.chapters[index].id}`, { signal: controller.signal });
+                const data = await response.json();
+                if (epoch !== chapterEpoch) return;
+                chapter = data;
+                if (!chapter.pages) {
+                    $('pageMessage').textContent = '此章节暂无可阅读页面。';
+                    navigation();
+                    return;
+                }
+                await showPage(page === -1 ? chapter.pages : Math.min(Math.max(1, page), chapter.pages));
+            } catch (error) {
+                if (epoch !== chapterEpoch || error.name === 'AbortError') return;
+                $('pageMessage').textContent = error.message;
+                $('pageMessage').className = 'message error';
+                $('pageRetry').hidden = false;
+            } finally { controllers.delete(controller); }
+        }
+
+        function movePage(direction) {
+            if (!chapter) return;
+            const page = currentPage + direction;
+            if (page < 1) loadChapter(chapterIndex - 1, -1);
+            else if (page > chapter.pages) loadChapter(chapterIndex + 1, 1);
+            else showPage(page);
+            $('reader').scrollIntoView({ block: 'start' });
+        }
+
+        async function loadAlbum() {
+            $('detailRetry').hidden = true;
+            $('detailMessage').textContent = '正在加载漫画详情……';
+            $('detailMessage').className = 'message';
+            try {
+                album = await (await request(`/api/albums/${albumId}`)).json();
+                document.title = `${album.title} · JMComic Web`;
+                $('title').textContent = album.title;
+                $('albumNumber').textContent = `JM ${album.id}`;
+                $('authors').textContent = `作者：${album.authors.join('、') || '未知'}`;
+                $('stats').textContent = `${album.chapters.length} 章节 · ${album.pages} 页 · ${album.views} 浏览 · ${album.likes} 喜欢`;
+                $('dates').textContent = `发布：${album.pub_date || '未知'} · 更新：${album.update_date || '未知'}`;
+                $('description').textContent = album.description || '暂无简介';
+                $('tags').replaceChildren();
+                for (const tag of album.tags) {
+                    const span = document.createElement('span');
+                    span.className = 'tag'; span.textContent = tag; $('tags').append(span);
+                }
+                if (!album.tags.length) $('tags').textContent = '暂无标签';
+                $('cover').replaceChildren();
+                const image = document.createElement('img');
+                image.alt = album.title; image.referrerPolicy = 'no-referrer';
+                image.onerror = () => { $('cover').textContent = '暂无封面'; };
+                image.src = album.image; $('cover').append(image);
+                $('downloadAlbum').href = `/app?album=${encodeURIComponent(album.id)}`;
+                $('chapterList').replaceChildren(); $('chapterSelect').replaceChildren();
+                album.chapters.forEach((item, index) => {
+                    const label = `${index + 1}. ${item.title}`;
+                    const button = document.createElement('button');
+                    button.type = 'button'; button.textContent = label; button.dataset.chapter = index;
+                    button.onclick = () => { loadChapter(index); $('reader').scrollIntoView({ block: 'start' }); };
+                    $('chapterList').append(button);
+                    const option = document.createElement('option');
+                    option.value = index; option.textContent = label; $('chapterSelect').append(option);
+                });
+                $('readStart').disabled = !album.chapters.length;
+                if (!album.chapters.length) $('chapterList').textContent = '暂无章节';
+                $('book').hidden = false; $('chapters').hidden = false;
+                $('detailMessage').textContent = '';
+                const params = new URLSearchParams(location.search);
+                const index = album.chapters.findIndex(item => item.id === params.get('chapter'));
+                if (index >= 0) {
+                    const page = Number(params.get('page'));
+                    loadChapter(index, Number.isInteger(page) && page > 0 ? page : 1);
+                }
+            } catch (error) {
+                $('detailMessage').textContent = `详情加载失败：${error.message}`;
+                $('detailMessage').className = 'message error';
+                $('detailRetry').hidden = false;
+            }
+        }
+
+        $('readStart').onclick = () => { loadChapter(chapterIndex); $('reader').scrollIntoView({ block: 'start' }); };
+        $('chapterSelect').onchange = () => loadChapter(Number($('chapterSelect').value));
+        for (const id of ['prevPage', 'prevBottom']) $(id).onclick = () => movePage(-1);
+        for (const id of ['nextPage', 'nextBottom']) $(id).onclick = () => movePage(1);
+        $('jumpForm').onsubmit = event => {
+            event.preventDefault();
+            const page = Number($('jumpPage').value);
+            if (Number.isInteger(page)) showPage(page);
+        };
+        $('pageRetry').onclick = () => chapter ? showPage(currentPage) : loadChapter(chapterIndex);
+        $('detailRetry').onclick = loadAlbum;
+        $('pageImage').onerror = () => {
+            $('pageImage').hidden = true;
+            $('pageMessage').textContent = '图片显示失败，请重试当前页。';
+            const entry = pageCache.get(currentPage);
+            if (entry?.url) URL.revokeObjectURL(entry.url);
+            pageCache.delete(currentPage);
+            $('pageRetry').hidden = false;
+        };
+        $('logout').onclick = async () => { await fetch('/api/session', { method: 'DELETE' }); location.replace('/'); };
+        document.addEventListener('keydown', event => {
+            if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey || event.target.closest('input, select, textarea') || event.target.isContentEditable || !chapter) return;
+            if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+                event.preventDefault(); movePage(event.key === 'ArrowLeft' ? -1 : 1);
+            }
+        });
+        window.addEventListener('pagehide', () => { ++chapterEpoch; ++pageRequest; clearPages(); });
+        window.addEventListener('pageshow', event => {
+            if (event.persisted && album && chapter) loadChapter(chapterIndex, currentPage);
+        });
+        loadAlbum();
+    </script>
+</body>
+</html>

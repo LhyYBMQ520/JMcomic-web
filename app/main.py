@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 import json
+import logging
 import shutil
 from pathlib import Path
+from typing import Annotated, Literal
 
-from fastapi import Cookie, Depends, FastAPI, Header, HTTPException, Response
+import jmcomic
+from fastapi import Cookie, Depends, FastAPI, Header, HTTPException, Path as ApiPath, Query, Response
 from fastapi.responses import FileResponse, HTMLResponse, StreamingResponse
 from pydantic import BaseModel, Field
 
@@ -12,6 +15,7 @@ from .services.jm_service import ARCHIVE_ROOT, DOWNLOAD_ROOT, download_task, nor
 from .services.task_manager import TaskManager
 from .config import cache_cleaner, config, config_reloader
 from .database import database
+from .services.browse_service import BrowseBusy, BrowseNotFound, browse
 
 app = FastAPI(title="JMComic Web Downloader", version="0.1.0")
 manager = TaskManager(download_task)
@@ -19,6 +23,9 @@ INDEX = Path(__file__).parent / "web" / "index.html"
 LOGIN = Path(__file__).parent / "web" / "login.html"
 FAVICON = Path(__file__).parent / "web" / "favicon.ico"
 ADMIN = Path(__file__).parent / "web" / "admin.html"
+READER = Path(__file__).parent / "web" / "reader.html"
+ComicId = Annotated[str, ApiPath(pattern=r"^[0-9]{1,20}$")]
+Category = Literal["0", "doujin", "single", "short", "hanman", "meiman", "3D"]
 
 
 @app.on_event("startup")
@@ -26,12 +33,14 @@ def start_maintenance() -> None:
     manager.recover()
     cache_cleaner.start()
     config_reloader.start()
+    browse.start()
 
 
 @app.on_event("shutdown")
 def stop_maintenance() -> None:
     config_reloader.stop()
     cache_cleaner.stop()
+    browse.stop()
 
 
 class IdRequest(BaseModel):
@@ -118,6 +127,54 @@ def index(
 @app.get("/admin", response_class=HTMLResponse)
 def admin_page(user_id: int = Depends(require_admin)) -> str:
     return ADMIN.read_text(encoding="utf-8")
+
+
+@app.get("/albums/{album_id}", response_class=HTMLResponse)
+def reader_page(album_id: ComicId, user_id: int = Depends(require_user)) -> str:
+    return READER.read_text(encoding="utf-8")
+
+
+def browse_call(function, *args):
+    try:
+        return function(*args)
+    except BrowseNotFound as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except BrowseBusy as exc:
+        raise HTTPException(status_code=429, detail=str(exc)) from exc
+    except jmcomic.MissingAlbumPhotoException as exc:
+        raise HTTPException(status_code=404, detail="漫画或章节不存在") from exc
+    except Exception as exc:
+        logging.exception("获取推荐或阅读内容失败")
+        raise HTTPException(status_code=502, detail="获取漫画内容失败，请稍后重试") from exc
+
+
+@app.get("/api/recommendations")
+def recommendations(
+    kind: Literal["day", "week", "month", "latest"] = "week",
+    page: int = Query(default=1, ge=1, le=9999),
+    category: Category = "0",
+    user_id: int = Depends(require_user),
+) -> dict:
+    return browse_call(browse.recommendations, kind, page, category)
+
+
+@app.get("/api/albums/{album_id}")
+def album_details(album_id: ComicId, user_id: int = Depends(require_user)) -> dict:
+    return browse_call(browse.album_detail, album_id)
+
+
+@app.get("/api/albums/{album_id}/chapters/{photo_id}")
+def chapter_details(album_id: ComicId, photo_id: ComicId, user_id: int = Depends(require_user)) -> dict:
+    return browse_call(browse.chapter_detail, album_id, photo_id)
+
+
+@app.get("/api/albums/{album_id}/chapters/{photo_id}/pages/{page}")
+def reader_image(
+    album_id: ComicId, photo_id: ComicId,
+    page: Annotated[int, ApiPath(ge=1)], user_id: int = Depends(require_user),
+) -> Response:
+    data = browse_call(browse.page_image, album_id, photo_id, page)
+    return Response(data, media_type="image/jpeg", headers={"Cache-Control": "private, no-store"})
 
 
 @app.get("/api/admin/users")

@@ -8,9 +8,24 @@
     <title>账户管理 - JMComic Web</title>
     <style>
         :root {
+            --accent: #ff9900;
+            --accent-hover: #eb8900;
+            --accent-ink: #402300;
+            --link: #9a4b00;
+            --accent-soft: #fff1dc;
+            --focus: #a95100;
+            --focus-ring: #ffe3ba;
+            --text: #302a24;
+            --muted: #786b5e;
+            --border: #eadfce;
+            --page: #fff8ef;
+            --surface-muted: #fffcf7;
+            --track: #f4e8d8;
+            --shadow: #6c3b100f;
+
             font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-            color: #172033;
-            background: #f5f7fb;
+            color: var(--text);
+            background: var(--page);
         }
 
         * {
@@ -48,14 +63,17 @@
         }
 
         .mark {
-            display: grid;
+            display: block;
+            flex: none;
             width: 38px;
             height: 38px;
-            color: #fff;
-            font-size: 20px;
-            background: #16233b;
-            border-radius: 10px;
-            place-items: center;
+        }
+
+        .mark img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
         }
 
         .nav {
@@ -66,7 +84,7 @@
         .nav a,
         .nav button {
             padding: 8px 11px;
-            color: #647089;
+            color: var(--muted);
             font: inherit;
             font-size: 13px;
             text-decoration: none;
@@ -88,16 +106,16 @@
 
         .subtitle,
         .muted {
-            color: #77839a;
+            color: var(--muted);
             font-size: 13px;
         }
 
         .panel {
             overflow: hidden;
             background: #fff;
-            border: 1px solid #e4e9f1;
+            border: 1px solid var(--border);
             border-radius: 8px;
-            box-shadow: 0 8px 24px #1c2a420f;
+            box-shadow: 0 8px 24px var(--shadow);
         }
 
         .create-form {
@@ -105,24 +123,24 @@
             grid-template-columns: minmax(240px, 1.4fr) minmax(180px, 1fr) auto auto;
             gap: 10px;
             padding: 18px;
-            border-bottom: 1px solid #edf0f5;
+            border-bottom: 1px solid var(--border);
         }
 
         input[type="text"] {
             width: 100%;
             min-width: 0;
             padding: 10px 12px;
-            color: #172033;
+            color: var(--text);
             font: inherit;
-            background: #fbfcfe;
-            border: 1px solid #d5dce8;
+            background: var(--surface-muted);
+            border: 1px solid var(--border);
             border-radius: 6px;
             outline: 0;
         }
 
         input:focus {
-            border-color: #4774d1;
-            box-shadow: 0 0 0 3px #e5edff;
+            border-color: var(--focus);
+            box-shadow: 0 0 0 3px var(--focus-ring);
         }
 
         button {
@@ -140,13 +158,13 @@
         }
 
         .primary {
-            color: #fff;
-            background: #285dcc;
+            color: var(--accent-ink);
+            background: var(--accent);
         }
 
         .secondary {
-            color: #31569c;
-            background: #edf2fb;
+            color: var(--link);
+            background: var(--accent-soft);
         }
 
         .danger {
@@ -168,14 +186,14 @@
             padding: 13px 14px;
             text-align: left;
             vertical-align: middle;
-            border-bottom: 1px solid #edf0f5;
+            border-bottom: 1px solid var(--border);
         }
 
         th {
-            color: #68758c;
+            color: var(--muted);
             font-size: 12px;
             font-weight: 750;
-            background: #fafbfd;
+            background: var(--surface-muted);
         }
 
         td {
@@ -199,14 +217,14 @@
 
         .empty {
             padding: 34px;
-            color: #8b96aa;
+            color: var(--muted);
             text-align: center;
         }
 
         .message {
             min-height: 22px;
             margin-top: 12px;
-            color: #526078;
+            color: #64584b;
             font-size: 13px;
         }
 
@@ -234,6 +252,16 @@
                 transition: none;
             }
         }
+
+        button:focus-visible, a:focus-visible, input:focus-visible,
+        select:focus-visible, textarea:focus-visible {
+            outline: 2px solid var(--focus);
+            outline-offset: 3px;
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .primary:not(:disabled):hover { background: var(--accent-hover); }
+        }
     </style>
 </head>
 
@@ -241,7 +269,7 @@
     <main class="shell">
         <header class="topbar">
             <div class="brand">
-                <div class="mark">J</div>
+                <div class="mark"><img src="/favicon.ico" alt="JMComic 看板娘" width="38" height="38"></div>
                 <span>JMComic 管理</span>
             </div>
             <nav class="nav">
