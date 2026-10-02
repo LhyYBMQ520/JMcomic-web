@@ -59,6 +59,26 @@
             font-weight: 750
         }
 
+        .brand-name {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 6px;
+        }
+
+        .version-badge {
+            padding: 2px 6px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            background: var(--accent-soft);
+            color: var(--link);
+            font-size: 10px;
+            font-weight: 600;
+            line-height: 1.4;
+            white-space: nowrap;
+            align-self: flex-start;
+        }
+
         .mark {
             display: block;
             flex: none;
@@ -511,7 +531,12 @@
     <main class="shell">
         <header class="topbar">
             <div class="brand">
-                <div class="mark"><img src="/favicon.ico" alt="JMComic 看板娘" width="38" height="38"></div><span>JMComic Download</span>
+                <div class="mark"><img src="/favicon.ico" alt="JMComic 看板娘" width="38" height="38"></div>
+                <div class="brand-name">
+                    <span>JMComic Download</span>
+                    <!-- 在此编辑显示的版本号 -->
+                    <span class="version-badge" aria-label="版本号">v2026.10.02 23:00 Beta</span>
+                </div>
             </div>
             <button id="logout" class="logout" type="button">退出登录</button>
         </header>
